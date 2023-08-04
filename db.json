@@ -49,6 +49,11 @@
       "email": "aa",
       "password": "aa",
       "id": 10
+    },
+    {
+      "email": "aaa",
+      "password": "aaa",
+      "id": 11
     }
   ],
   "boards": [
@@ -105,6 +110,46 @@
       "contents": "asdfasdf",
       "isDeleted": false,
       "id": 9
+    },
+    {
+      "email": "123",
+      "contents": "룰루",
+      "isDeleted": true,
+      "id": 10
+    },
+    {
+      "email": "123",
+      "contents": "룰루루",
+      "isDeleted": true,
+      "id": 11
+    },
+    {
+      "email": "123",
+      "contents": "하ㅓ하",
+      "isDeleted": false,
+      "id": 12
+    },
+    {
+      "email": "123",
+      "contents": "하하하하",
+      "isDeleted": false,
+      "id": 13
+    }
+  ],
+  "comments": [
+    {
+      "boardId": "7",
+      "comments": "하하",
+      "email": "123",
+      "isDeleted": false,
+      "id": 2
+    },
+    {
+      "boardId": "7",
+      "comments": "웃기다",
+      "email": "123",
+      "isDeleted": false,
+      "id": 3
     }
   ]
 }

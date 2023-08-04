@@ -1,10 +1,12 @@
 import { Button, Input } from 'antd';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Main: React.FC<any> = () => {
   const [data, setData] = useState([]);
+  const [temp, setTemp] = useState([]);
   const [contents, setContents] = useState<string>('');
 
   const email = localStorage.getItem('email');
@@ -13,8 +15,14 @@ const Main: React.FC<any> = () => {
     try {
       // TODO: 데이터베이스에서 boards 리스트 가져오기
       const response = await axios.get('http://localhost:4000/boards');
+
+      const comments = await axios.get(
+        `http://localhost:4000/comments?isDeleted=${false}`
+      );
+
       // TODO: 가져온 결과 배열을 data state에 set 하기
       setData(response.data);
+      setTemp(comments.data);
     } catch (error) {
       // TODO: 네트워크 등 기타 문제인 경우, "일시적인 오류가 발생하였습니다. 고객센터로 연락주세요." alert
       alert('일시적인 오류가 발생하였습니다. 고객센터로 연락주세요.');
@@ -55,17 +63,51 @@ const Main: React.FC<any> = () => {
     setContents(e.target.value);
   };
 
-  const onClickDelete = async (itemId: number) => {
+  // const onClickDelete = async (itemId: number) => {
+  //   const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
+  //   if (confirmDelete) {
+  //     try {
+  //       await axios.delete(`http://localhost:4000/boards/${itemId}`);
+  //       fetchData();
+  //     } catch (error) {
+  //       alert('일시적인 오류가 발생하였습니다. 고객센터로 연락주세요.');
+  //     }
+  //   }
+  // };
+
+  const handleDeleteButtonClick = async (itemId: number) => {
     const confirmDelete = window.confirm('정말 삭제하시겠습니까?');
     if (confirmDelete) {
       try {
-        await axios.delete(`http://localhost:4000/boards/${itemId}`);
-        fetchData();
+        await axios.patch(`http://localhost:4000/boards/${itemId}`, {
+          isDeleted: true,
+        });
+
+        alert(
+          '삭제가 완료되었습니다. 아직 자동 새로고침이 불가하여 수동으로 갱신합니다.'
+        );
+
+        window.location.reload();
       } catch (error) {
         alert('일시적인 오류가 발생하였습니다. 고객센터로 연락주세요.');
       }
     }
   };
+  // ~삭제 관련하여~
+
+  // 1. 삭제한거 렌더링할때 아예 필터를 걸어서 제외시키거나
+  // .filter((item: any) => !item.isDeleted)
+
+  // url에 파라미터를 넣어줘서 제외시킴
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:4000/boards?isDeleted=${false}`);
+  //     setData(response.data);
+  //   } catch (error) {
+  //     alert('일시적인 오류가 발생하였습니다. 고객센터로 연락주세요.');
+  //     return false;
+  //   }
+  // };
 
   return (
     <MainWrapper>
@@ -78,17 +120,29 @@ const Main: React.FC<any> = () => {
         />
       </StyledForm>
       <ListWrapper>
-        {data.map((item: any, index) => (
-          <ListItem key={item.id}>
-            <span>
-              {index + 1}. {item.contents}
-            </span>
-            {/* // TODO: 로그인 한 user의 이메일과 일치하는 경우에만 삭제버튼 보이도록 제어 */}
-            {email === item.email && (
-              <Button onClick={() => onClickDelete(item.id)}>삭제</Button>
-            )}
-          </ListItem>
-        ))}
+        {data
+          .filter((item: any) => !item.isDeleted)
+          .map((item: any, index) => (
+            <ListItem key={item.id}>
+              <span>
+                {index + 1}.{' '}
+                <Link to={`/${item.id}`}>
+                  {item.contents} (
+                  {
+                    temp.filter((comment: any) => +comment.boardId === item.id)
+                      .length
+                  }
+                  )
+                </Link>
+              </span>
+              {/* // TODO: 로그인 한 user의 이메일과 일치하는 경우에만 삭제버튼 보이도록 제어 */}
+              {email === item.email && (
+                <Button onClick={() => handleDeleteButtonClick(item.id)}>
+                  삭제
+                </Button>
+              )}
+            </ListItem>
+          ))}
       </ListWrapper>
     </MainWrapper>
   );

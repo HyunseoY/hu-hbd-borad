@@ -1,8 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AuthMain from "../pages/AuthMain";
-import Main from "../pages/Main";
-import AuthLayout from "./AuthLayout";
-import NonAuthLayout from "./NonAuthLayout";
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AuthMain from '../pages/AuthMain';
+import Detail from '../pages/Detail';
+import Main from '../pages/Main';
+import AuthLayout from './AuthLayout';
+import NonAuthLayout from './NonAuthLayout';
 
 const Router = () => {
   return (
@@ -13,6 +14,7 @@ const Router = () => {
         </Route>
         <Route element={<AuthLayout />}>
           <Route path="/" element={<Main />} />
+          <Route path="/:id" element={<Detail />} />
         </Route>
       </Routes>
     </BrowserRouter>
